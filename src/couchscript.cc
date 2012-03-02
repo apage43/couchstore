@@ -2,6 +2,7 @@
 #include "config.h"
 #include <iostream>
 #include <cassert>
+#include <cstdlib>
 #include <sysexits.h>
 #include <stdlib.h>
 #include <unistd.h>
