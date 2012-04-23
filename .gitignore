@@ -30,6 +30,7 @@
 /config/mkinstalldirs
 /config/plugin.ac
 /configure
+/couch_compact
 /couch_dbdump
 /couch_dbinfo
 /couchscript
