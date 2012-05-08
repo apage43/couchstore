@@ -367,6 +367,13 @@ static couchstore_error_t buffered_sync(couch_file_handle handle)
     return err;
 }
 
+static couchstore_error_t buffered_advise(couch_file_handle handle, off_t offset, off_t len,
+                                          couchstore_io_advice_t advice)
+{
+    buffered_file_handle *h = (buffered_file_handle*)handle;
+    return h->raw_ops->advise(h->raw_ops_handle, offset, len, advice);
+}
+
 static const couch_file_ops ops = {
     (uint64_t)2,
     buffered_constructor,
@@ -376,6 +383,7 @@ static const couch_file_ops ops = {
     buffered_pwrite,
     buffered_goto_eof,
     buffered_sync,
+    buffered_advise,
     buffered_destructor
 };
 

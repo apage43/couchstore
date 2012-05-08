@@ -49,6 +49,9 @@ couchstore_error_t couchstore_compact_db_ex(Db* source, const char* target_filen
     target->header.purge_seq = source->header.purge_seq;
     target->header.purge_ptr = source->header.purge_ptr;
 
+    //Will be reading the source file sequentially
+    source->file_ops->advise(source->file_handle, 0, source->file_pos, COUCHSTORE_IOADV_SEQUENTIAL);
+
     if(source->header.by_seq_root) {
         ctx.id_tmp = tmpfile();
         error_pass(compact_seq_tree(source, target, &ctx));
@@ -279,6 +282,10 @@ static couchstore_error_t compact_seq_fetchcb(couchfile_lookup_request *rq, void
     set_bits(v->buf + 5, 1, 47, new_bp);
     free(item.buf);
 
+    //When reading in seq order, we know that we wont be looking for data or b-tree nodes
+    //before this point in the file any more, so lets make sure to eject that stuff from
+    //page cache. (Should we do this more chunkily?)
+    rq->db->file_ops->advise(rq->db->file_handle, 0, bp, COUCHSTORE_IOADV_DONTNEED);
     return output_seqtree_item(k, v, ctx);
 }
 

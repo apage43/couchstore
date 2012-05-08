@@ -15,6 +15,18 @@ extern "C" {
      */
     typedef struct couch_file_handle_opaque* couch_file_handle;
 
+    typedef enum {
+        COUCHSTORE_IOADV_NORMAL = 0,
+        /**
+         * We do not expect to need this data, please eject it from cache.
+         */
+        COUCHSTORE_IOADV_DONTNEED = 1,
+        /**
+         * We expect to read this data sequentially.
+         */
+        COUCHSTORE_IOADV_SEQUENTIAL = 2
+    } couchstore_io_advice_t;
+
     /**
      * A structure that defines the implementation of the file I/O primitives
      * used by CouchStore. Passed to couchstore_open_db_ex().
@@ -22,7 +34,7 @@ extern "C" {
     typedef struct {
         /**
          * Version number that describes the layout of the structure. Should be set
-         * to 2.
+         * to 3.
          */
         uint64_t version;
 
@@ -93,12 +105,24 @@ extern "C" {
         couchstore_error_t (*sync)(couch_file_handle handle);
 
         /**
+         * Advise the I/O layer about file access patterns.
+         *
+         * @param offset beginning of data range
+         * @param len end of data range
+         * @param advice see couchstore_io_advice_t
+         * @return COUCHSTORE_SUCCESS upon success.
+         */
+        couchstore_error_t (*advise)(couch_file_handle handle, off_t offset, off_t len,
+                                     couchstore_io_advice_t advice);
+
+        /**
          * Called as part of shutting down the db instance this instance was
          * passed to. A hook to for releasing allocated resources
          *
          * @param handle file handle to be released
          */
         void (*destructor)(couch_file_handle handle);
+
     } couch_file_ops;
 
 #ifdef __cplusplus

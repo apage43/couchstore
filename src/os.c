@@ -105,6 +105,32 @@ static couchstore_error_t couch_sync(couch_file_handle handle)
     return COUCHSTORE_SUCCESS;
 }
 
+static int couchstore_advice_to_posix(couchstore_io_advice_t advice)
+{
+    switch(advice) {
+#ifdef POSIX_FADV_NORMAL
+        case COUCHSTORE_IOADV_NORMAL:
+            return POSIX_FADV_NORMAL;
+        case COUCHSTORE_IOADV_DONTNEED:
+            return POSIX_FADV_DONTNEED;
+        case COUCHSTORE_IOADV_SEQUENTIAL:
+            return POSIX_FADV_SEQUENTIAL;
+#else
+        default:
+            return 0;
+#endif
+    }
+}
+
+static couchstore_error_t couch_advise(couch_file_handle handle, off_t offset, off_t len,
+                                       couchstore_io_advice_t advice)
+{
+#ifdef POSIX_FADV_NORMAL
+    posix_fadvise(handle_to_fd(handle), offset, len, couchstore_advice_to_posix(advice));
+#endif
+    return COUCHSTORE_SUCCESS;
+}
+
 static couch_file_handle couch_constructor(void)
 {
     // We don't have a file descriptor till couch_open runs, so return an invalid value for now.
@@ -126,6 +152,7 @@ static const couch_file_ops default_file_ops = {
     couch_pwrite,
     couch_goto_eof,
     couch_sync,
+    couch_advise,
     couch_destructor
 };
 
