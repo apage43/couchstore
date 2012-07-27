@@ -160,8 +160,35 @@ static void couch_destructor(couch_file_handle handle)
     (void)handle;
 }
 
+couchstore_error_t couch_advise(couch_file_handle handle, couchstore_advice_t advice, off_t offset,
+                                off_t len) {
+#ifdef POSX_FADV_NORMAL
+    int fd = handle_to_fd(handle);
+    int padvice;
+    switch(advice) {
+        case COUCH_FILE_PREFETCH:
+        padvice = POSIX_FADV_WILLNEED;
+        break;
+        case COUCH_FILE_DROP:
+        padvice = POSIX_FADV_DONTNEED;
+        break;
+        case COUCH_FILE_RANDOM:
+        padvice = POSIX_FADV_RANDOM;
+        break;
+        default:
+        return COUCHSTORE_ERROR_INVALID_ARGUMENTS;
+    }
+    int err = posix_fadvise(fd, offset, len, padvice);
+
+    if(err == EINVAL) {
+        return COUCHSTORE_ERROR_INVALID_ARGUMENTS;
+    }
+#endif
+    return COUCHSTORE_SUCCESS;
+}
+
 static const couch_file_ops default_file_ops = {
-    (uint64_t)2,
+    (uint64_t)3,
     couch_constructor,
     couch_open,
     couch_close,
@@ -169,6 +196,7 @@ static const couch_file_ops default_file_ops = {
     couch_pwrite,
     couch_goto_eof,
     couch_sync,
+    couch_advise,
     couch_destructor
 };
 

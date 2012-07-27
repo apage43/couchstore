@@ -481,6 +481,34 @@ extern "C" {
     LIBCOUCHSTORE_API
     couchstore_error_t couchstore_compact_db_ex(Db* source, const char* target_filename,
                                                 const couch_file_ops *ops);
+
+    typedef enum {
+        /* Drop bodies as soon as we write them. If the user is maintaining its own
+         * cache of document bodies this might be a good idea.
+         * Default: 0 - off
+         * Parameter: 0 - off, 1 - on */
+        COUCHSTORE_TUNE_DROP_BODIES,
+        /* Use fadvise to attempt to prefetch nodes that will be visited in the future
+         * when doing any btree operations
+         * Default: 1 - on
+         * Parameter: 0 - off, 1 - on */
+        COUCHSTORE_TUNE_BTREE_PREFETCH,
+        /* B-Tree nodes will be split such that their uncompressed size does not exceed this
+         * amount of bytes.
+         * Default: 1279 bytes */
+        COUCHSTORE_TUNE_NODE_SIZE_THRESHOLD
+    } couchstore_tuning_t;
+
+    /*
+     * Give a database performance tuning advice.
+     *
+     * @param db the database to set the advice on.
+     * @param advice the type of advice
+     * @param opt an optional parameter for the advice
+     * @return COUCHSTORE_SUCCESS on success
+     */
+    LIBCOUCHSTORE_API couchstore_error_t couchstore_db_tune(Db* db, couchstore_tuning_t advice, uint64_t opt);
+
     /*////////////////////  MISC: */
 
     /**

@@ -12,6 +12,8 @@
 
 #define ROOT_BASE_SIZE 12
 #define HEADER_BASE_SIZE 25
+#define PREFETCH_SIZE (256*1024)
+#define DEFAULT_CHUNK_THRESHOLD 1279
 
 sized_buf nil_atom = {
     (char *) "\x64\x00\x03nil",
@@ -209,6 +211,32 @@ couchstore_error_t couchstore_open_db(const char *filename,
                                  couch_get_default_file_ops(), pDb);
 }
 
+LIBCOUCHSTORE_API couchstore_error_t couchstore_db_tune(Db* db, couchstore_tuning_t advice, uint64_t opt)
+{
+    switch(advice) {
+        case COUCHSTORE_TUNE_DROP_BODIES:
+            if(opt) {
+                db->tuning.cache_flags |= FLAG_DROP_BODIES;
+            } else {
+                db->tuning.cache_flags &= ~FLAG_DROP_BODIES;
+            }
+        break;
+        case COUCHSTORE_TUNE_BTREE_PREFETCH:
+            if(opt) {
+                db->tuning.cache_flags |= FLAG_KP_PREFETCH;
+            } else {
+                db->tuning.cache_flags &= ~FLAG_KP_PREFETCH;
+            }
+        break;
+        case COUCHSTORE_TUNE_NODE_SIZE_THRESHOLD:
+            db->tuning.node_size_threshold = opt;
+        break;
+        default:
+            return COUCHSTORE_ERROR_INVALID_ARGUMENTS;
+    }
+    return COUCHSTORE_SUCCESS;
+}
+
 LIBCOUCHSTORE_API
 couchstore_error_t couchstore_open_db_ex(const char *filename,
                                          couchstore_open_flags flags,
@@ -221,7 +249,7 @@ couchstore_error_t couchstore_open_db_ex(const char *filename,
 
     /* Sanity check input parameters */
     if (filename == NULL || pDb == NULL || ops == NULL ||
-            ops->version != 2 || ops->constructor == NULL || ops->open == NULL ||
+            ops->version != 3 || ops->constructor == NULL || ops->open == NULL ||
             ops->close == NULL || ops->pread == NULL ||
             ops->pwrite == NULL || ops->goto_eof == NULL ||
             ops->sync == NULL || ops->destructor == NULL ||
@@ -244,6 +272,8 @@ couchstore_error_t couchstore_open_db_ex(const char *filename,
         openflags |= O_CREAT;
     }
 
+    db->tuning.cache_flags = FLAG_KP_PREFETCH;
+    db->tuning.node_size_threshold = DEFAULT_CHUNK_THRESHOLD;
     db->filename = strdup(filename);
     error_unless(db->filename, COUCHSTORE_ERROR_ALLOC_FAIL);
 
@@ -264,6 +294,13 @@ couchstore_error_t couchstore_open_db_ex(const char *filename,
     } else {
         error_pass(find_header(db));
     }
+
+    /* Advise against readahead */
+    db->file_ops->advise(db->file_handle, COUCH_FILE_RANDOM, 0, 0);
+
+    /* Prefetch end of file */
+    db->file_ops->advise(db->file_handle, COUCH_FILE_PREFETCH, db->file_pos - PREFETCH_SIZE,
+                         PREFETCH_SIZE);
 
     *pDb = db;
     return COUCHSTORE_SUCCESS;

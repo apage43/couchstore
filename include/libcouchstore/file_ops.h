@@ -9,6 +9,15 @@
 extern "C" {
 #endif
 
+    typedef enum {
+        /* Instruct the I/O layer to prefetch the specified data. */
+        COUCH_FILE_PREFETCH,
+        /* Instruct the I/O layer not to cache specified data. */
+        COUCH_FILE_DROP,
+        /* Instruct the I/O layer to disable forward readahead. */
+        COUCH_FILE_RANDOM
+    } couchstore_advice_t;
+
     /**
      * Abstract file handle. Implementations can use it for anything they want, whether
      * a pointer to an allocated data structure, or an integer such as a Unix file descriptor.
@@ -22,7 +31,7 @@ extern "C" {
     typedef struct {
         /**
          * Version number that describes the layout of the structure. Should be set
-         * to 2.
+         * to 3.
          */
         uint64_t version;
 
@@ -91,6 +100,17 @@ extern "C" {
          * @return COUCHSTORE_SUCCESS upon success
          */
         couchstore_error_t (*sync)(couch_file_handle handle);
+
+        /**
+         * Give the I/O layer caching advice. Advice may be ignored.
+         *
+         * @param handle Handle to apply advice too
+         * @param advice Type of advice to apply
+         * @param offset Offset to start at
+         * @param len    Length in bytes of range to apply advice to.
+         */
+        couchstore_error_t (*advise)(couch_file_handle handle, couchstore_advice_t advice,
+                                     off_t offset, off_t len);
 
         /**
          * Called as part of shutting down the db instance this instance was

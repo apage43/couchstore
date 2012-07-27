@@ -9,25 +9,24 @@
 #include "arena.h"
 #include "bitfield.h"
 
-#define CHUNK_THRESHOLD 1279
-#define CHUNK_SIZE (CHUNK_THRESHOLD * 2 / 3)
-
+#define CHUNK_SIZE(T) (T * 2 / 3)
 
 static couchstore_error_t flush_mr_partial(couchfile_modify_result *res, size_t mr_quota);
 static couchstore_error_t flush_mr(couchfile_modify_result *res);
 
 static couchstore_error_t maybe_flush(couchfile_modify_result *mr)
 {
+    uint32_t threshold = mr->rq->db->tuning.node_size_threshold;
     if(mr->rq->compacting) {
         /* The compactor can (and should), just write out nodes
          * of size CHUNK_SIZE as soon as it can, so that it can
          * free memory it no longer needs. */
-        if (mr->modified && mr->node_len > CHUNK_SIZE) {
+        if (mr->modified && mr->node_len > CHUNK_SIZE(threshold)) {
             return flush_mr(mr);
         }
-    } else if (mr->modified && mr->node_len > CHUNK_THRESHOLD && mr->count > 3) {
+    } else if (mr->modified && mr->node_len > threshold && mr->count > 3) {
         /* Don't write out a partial node unless we've collected at least three items */
-        return flush_mr_partial(mr, CHUNK_SIZE);
+        return flush_mr_partial(mr, CHUNK_SIZE(threshold));
     }
 
     return COUCHSTORE_SUCCESS;
@@ -302,6 +301,38 @@ cleanup:
     return errcode;
 }
 
+static int prefetch_children(couchfile_modify_request *rq,
+                         char* nodebuf, int nodebuflen, int start, int end) {
+    int bufpos = 1;
+    while (bufpos < nodebuflen && start < end) {
+        uint32_t klen, vlen;
+        get_kvlen(nodebuf + bufpos, &klen, &vlen);
+        sized_buf cmp_key = {nodebuf + bufpos + 5, klen};
+        sized_buf val_buf = {nodebuf + bufpos + 5 + klen, vlen};
+        bufpos += 5 + klen + vlen;
+        int cmp_val = rq->cmp.compare(&cmp_key, rq->actions[start].key);
+
+        if (bufpos == nodebuflen) {
+            uint64_t ptr = get_48(val_buf.buf);
+            rq->db->file_ops->advise(rq->db->file_handle, COUCH_FILE_PREFETCH,
+                                     ptr, rq->db->tuning.node_size_threshold * 2);
+            break;
+        }
+
+        if (cmp_val >= 0) {
+            int range_end = start;
+            while (range_end < end &&
+                    rq->cmp.compare(rq->actions[range_end].key, &cmp_key) <= 0) {
+                range_end++;
+            }
+            uint64_t ptr = get_48(val_buf.buf);
+            rq->db->file_ops->advise(rq->db->file_handle, COUCH_FILE_PREFETCH,
+                                     ptr, rq->db->tuning.node_size_threshold * 2);
+            start = range_end;
+        }
+    }
+}
+
 static couchstore_error_t modify_node(couchfile_modify_request *rq,
                                       node_pointer *nptr,
                                       int start, int end,
@@ -413,6 +444,9 @@ static couchstore_error_t modify_node(couchfile_modify_request *rq,
         }
     } else if (nodebuf[0] == 0) { //KP Node
         local_result->node_type = KP_NODE;
+        if(rq->db->tuning.cache_flags & FLAG_KP_PREFETCH) {
+            prefetch_children(rq, nodebuf, nodebuflen, start, end);
+        }
         while (bufpos < nodebuflen && start < end) {
             uint32_t klen, vlen;
             get_kvlen(nodebuf + bufpos, &klen, &vlen);

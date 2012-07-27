@@ -369,8 +369,19 @@ static couchstore_error_t buffered_sync(couch_file_handle handle)
     return err;
 }
 
+couchstore_error_t buffered_advise(couch_file_handle handle, couchstore_advice_t advice,
+                                   off_t offset, off_t len) {
+    buffered_file_handle *h = (buffered_file_handle*)handle;
+    if((offset + len) > h->write_buffer->offset) {
+        //Could be trying to do something to something we haven't written.
+        //Go ahead and flush.
+        flush_buffer(h->write_buffer);
+    }
+    return h->raw_ops->advise(h->raw_ops_handle, advice, offset, len);
+}
+
 static const couch_file_ops ops = {
-    (uint64_t)2,
+    (uint64_t)3,
     buffered_constructor,
     buffered_open,
     buffered_close,
@@ -378,6 +389,7 @@ static const couch_file_ops ops = {
     buffered_pwrite,
     buffered_goto_eof,
     buffered_sync,
+    buffered_advise,
     buffered_destructor
 };
 

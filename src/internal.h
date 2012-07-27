@@ -16,7 +16,7 @@
 #define COUCH_SNAPPY_THRESHOLD 64
 
 enum {
-    /** Additional couchstore_docinfos_options flag */ 
+    /** Additional couchstore_docinfos_options flag */
     COUCHSTORE_INCLUDE_CORRUPT_DOCS = 0x40000000
 };
 
@@ -42,6 +42,16 @@ extern "C" {
         uint64_t position;
     } db_header;
 
+    enum {
+        FLAG_DROP_BODIES = 1,
+        FLAG_KP_PREFETCH = 2
+    };
+
+    typedef struct _db_tuning {
+        uint8_t cache_flags;
+        uint32_t node_size_threshold;
+    } db_tuning;
+
     struct _db {
         uint64_t file_pos;
         const couch_file_ops *file_ops;
@@ -49,6 +59,7 @@ extern "C" {
         const char* filename;
         db_header header;
         void *userdata;
+        db_tuning tuning;
     };
 
     const couch_file_ops *couch_get_default_file_ops(void);

@@ -333,6 +333,7 @@ couchstore_error_t couchstore_save_documents(Db *db,
     seqvlist = fatbuf_get(fb, numdocs * sizeof(sized_buf));
     idvlist = fatbuf_get(fb, numdocs * sizeof(sized_buf));
 
+    uint64_t data_start_mark = db->file_pos;
     for (ii = 0; ii < numdocs; ii++) {
         seq++;
         if (docs) {
@@ -349,6 +350,7 @@ couchstore_error_t couchstore_save_documents(Db *db,
             break;
         }
     }
+    uint64_t data_end_mark = db->file_pos;
 
     if (errcode == COUCHSTORE_SUCCESS) {
         errcode = update_indexes(db, seqklist, seqvlist,
@@ -363,6 +365,11 @@ couchstore_error_t couchstore_save_documents(Db *db,
             infos[ii]->db_seq = ++seq;
         }
         db->header.update_seq = seq;
+    }
+
+    if(db->tuning.cache_flags & FLAG_DROP_BODIES) {
+        db->file_ops->advise(db->file_handle, COUCH_FILE_DROP, data_start_mark,
+                             data_end_mark - data_start_mark);
     }
 
     return errcode;
