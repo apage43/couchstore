@@ -117,7 +117,6 @@ static int foldprint(Db *db, DocInfo *docinfo, void *ctx)
     return 0;
 }
 
-
 static int visit_node(Db *db,
                       int depth,
                       const DocInfo* docinfo,
@@ -150,12 +149,28 @@ static int visit_node(Db *db,
     return 0;
 }
 
+static FILE* dumpfile = NULL;
+static couch_file_ops* default_ops = NULL;
+
+static ssize_t dump_pread(couch_file_handle h, void *buf, size_t nbytes, off_t offset) {
+    if(dumpfile) {
+        fprintf(dumpfile,"%llu, %ld\n", offset, nbytes);
+    }
+    return default_ops->pread(h, buf, nbytes, offset);
+}
 
 static int process_file(const char *file, int *total)
 {
     Db *db;
     couchstore_error_t errcode;
-    errcode = couchstore_open_db(file, COUCHSTORE_OPEN_FLAG_RDONLY, &db);
+    int dump_reads = (getenv("DBDUMP_DUMP_READS") != NULL);
+    couch_file_ops ops = *default_ops;
+    if(dump_reads) {
+        fprintf(dumpfile, "#%s\n", file);
+        ops.pread = dump_pread;
+    }
+
+    errcode = couchstore_open_db_ex(file, COUCHSTORE_OPEN_FLAG_RDONLY, &ops, &db);
     if (errcode != COUCHSTORE_SUCCESS) {
         fprintf(stderr, "Failed to open \"%s\": %s\n",
                 file, couchstore_strerror(errcode));
@@ -206,6 +221,11 @@ int main(int argc, char **argv)
     if (argc < 2) {
         usage();
     }
+    default_ops = couchstore_get_default_file_ops();
+    int dump_reads = (getenv("DBDUMP_DUMP_READS") != NULL);
+    if(dump_reads) {
+        dumpfile = fopen("readdump.txt", "a");
+    }
 
     int ii = 1;
     while (strncmp(argv[ii], "-", 1) == 0) {
@@ -229,6 +249,10 @@ int main(int argc, char **argv)
     int count = 0;
     for (; ii < argc; ++ii) {
         error += process_file(argv[ii], &count);
+    }
+
+    if(dump_reads) {
+        fclose(dumpfile);
     }
 
     printf("\nTotal docs: %d\n", count);
