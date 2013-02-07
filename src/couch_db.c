@@ -181,7 +181,7 @@ couchstore_error_t couchstore_commit(Db *db)
     //Extend file size to where end of header will land before we do first sync
     db_write_buf(&db->file, &zerobyte, NULL, NULL);
 
-    couchstore_error_t errcode = db->file.ops->sync(db->file.handle);
+    //couchstore_error_t errcode = db->file.ops->sync(db->file.handle);
 
     //Set the pos back to where it was when we started to write the real header.
     db->file.pos = curpos;
