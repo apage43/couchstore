@@ -1,0 +1,28 @@
+opening nonexistent file errors... OS Error: errno = 0: `Undefined error: 0'
+OK 
+dump empty db...  OK
+save_doc...  OK
+save_docs (doc count 4)... get by ID... bulk IDs... get by sequence... bulk sequences... changes_since...  OK
+save_docs (doc count 4)... get by ID... bulk IDs... get by sequence... bulk sequences... changes_since...  OK
+save_docs (doc count 69)... get by ID... bulk IDs... get by sequence... bulk sequences... changes_since...  OK
+save_docs (doc count 69)... get by ID... bulk IDs... get by sequence... bulk sequences... changes_since...  OK
+save_docs (doc count 666)... get by ID... bulk IDs... get by sequence... bulk sequences... changes_since...  OK
+save_docs (doc count 666)... get by ID... bulk IDs... get by sequence... bulk sequences... changes_since...  OK
+save_docs (doc count 9090)... get by ID... bulk IDs... get by sequence... bulk sequences... changes_since...  OK
+save_docs (doc count 9090)... get by ID... bulk IDs... get by sequence... bulk sequences... changes_since...  OK
+local docs...  OK
+compressed bodies...  OK
+changes no dupes...  OK
+regression mb-5086....  OK
+huge rev_seq....  OK
+JSON collation: escapes... scalars... ASCII... raw... arrays... nesting... Unicode... OK
+Indexer: OK
+Using test database at testfile.couch
+Index header is at 0x9000
+	Root: type=0, pointer=27326, subtreesize=28018, reduce=209 bytes
+	      SubTreeCount = 1000
+	      Bitmap = <fb795922 3dd7de19 976b72b1 bef7630b ac75fae2 e1bbe595 71f794f1 377a3723 e93cffc7 9aeafefd 9bb67fff 7aa76551 4f42fd9f 719df5ff 0e27db0f f533f37a 3d857726 baddf3db 653cd4dd 7bfdbb82 32c7cb74 5ad85f7e fd7cfd95 c0aa6e53 df8ca830 fd673fef 9870c6c7 7aacb6fd b6e9ec3c b8dfb96f fbf49d6f 3fcf2fb5 >
+	      JSONReduction = '{"count":1000,"max":99.51,"min":0.18,"sum":49547.93,"sumsqr":3272610.9289}'
+	Root: type=1, pointer=36374, subtreesize=8830, reduce=133 bytes
+	      SubTreeCount = 1000
+	      Bitmap = <fb795922 3dd7de19 976b72b1 bef7630b ac75fae2 e1bbe595 71f794f1 377a3723 e93cffc7 9aeafefd 9bb67fff 7aa76551 4f42fd9f 719df5ff 0e27db0f f533f37a 3d857726 baddf3db 653cd4dd 7bfdbb82 32c7cb74 5ad85f7e fd7cfd95 c0aa6e53 df8ca830 fd673fef 9870c6c7 7aacb6fd b6e9ec3c b8dfb96f fbf49d6f 3fcf2fb5 >
