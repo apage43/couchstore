@@ -20,7 +20,6 @@ typedef struct compact_ctx {
     /* This is for stuff that lasts the duration of the b-tree writing (node pointers) */
     arena *persistent_arena;
     couchfile_modify_result *target_mr;
-    tree_file* target_file;
     couchstore_compact_flags flags;
 } compact_ctx;
 
@@ -50,12 +49,37 @@ couchstore_error_t couchstore_compact_db_ex(Db* source, const char* target_filen
     target->header.purge_ptr = source->header.purge_ptr;
 
     if(source->header.by_seq_root) {
+<<<<<<< HEAD
+        error_pass(TreeWriterOpen(NULL, ebin_cmp, by_id_reduce, by_id_rereduce, &ctx.id_tree_writer));
+        //Will be loading this one up in Seq order, so we won't need to TreeWriterSort it
+        error_pass(TreeWriterOpen(NULL, seq_cmp, by_seq_reduce, by_seq_rereduce, &ctx.seq_tree_writer));
+        //Dump seq tree into both TreeWriters
+        error_pass(compact_seq_tree(source, &ctx));
+
+        //Sort the ID tree by ID
+        error_pass(TreeWriterSort(ctx.id_tree_writer));
+        //Mark end of bodies segment
+        int64_t bodies_end = target->file.pos;
+        //Build the b-trees
+        error_pass(TreeWriterWrite(ctx.seq_tree_writer, &target->file, &target->header.by_seq_root));
+        error_pass(TreeWriterWrite(ctx.id_tree_writer, &target->file, &target->header.by_id_root));
+        TreeWriterFree(ctx.id_tree_writer);
+        TreeWriterFree(ctx.seq_tree_writer);
+        ctx.id_tree_writer = NULL;
+        ctx.seq_tree_writer = NULL;
+        //Attempt to evict doc bodies in new file from FS cache, make sure we're sync'd up first.
+        if(flags & COUCHSTORE_COMPACT_FLAG_EVICT_BODIES) {
+            target->file.ops->sync(target->file.handle);
+            target->file.ops->advise(target->file.handle, 0, bodies_end, COUCHSTORE_FILE_ADVICE_EVICT);
+        }
+=======
         error_pass(TreeWriterOpen(NULL, ebin_cmp, by_id_reduce, by_id_rereduce, &ctx.tree_writer));
         error_pass(compact_seq_tree(source, target, &ctx));
         error_pass(TreeWriterSort(ctx.tree_writer));
         error_pass(TreeWriterWrite(ctx.tree_writer, &target->file, &target->header.by_id_root));
         TreeWriterFree(ctx.tree_writer);
         ctx.tree_writer = NULL;
+>>>>>>> parent of c18c5b2... MB-8020 Change compacted file layout
     }
 
     if(source->header.local_docs_root) {
