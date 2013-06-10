@@ -1,0 +1,24 @@
+find_path(
+  ICU_INCLUDE_DIR 
+  NAMES unicode/utypes.h
+  HINTS ${ICU_PREFIX}/include)
+find_library(
+  ICU_LIBRARY
+  NAMES icuuc 
+  HINTS ${ICU_PREFIX}/lib)
+find_library(
+  ICUDATA_LIBRARY
+  NAMES icudata
+  HINTS ${ICU_PREFIX}/lib)
+find_library(
+  ICUI18N_LIBRARY
+  NAMES icui18n
+  HINTS ${ICU_PREFIX}/lib)
+
+if(ICU_INCLUDE_DIR AND ICU_LIBRARY)
+  set(ICU_FOUND 1)
+  set(ICU_LIBRARIES ${ICU_LIBRARY} ${ICUDATA_LIBRARY} ${ICUI18N_LIBRARY})
+else(ICU_INCLUDE_DIR AND ICU_LIBRARY)
+  set(ICU_FOUND 0)
+  set(ICU_LIBRARIES)
+endif(ICU_INCLUDE_DIR AND ICU_LIBRARY)

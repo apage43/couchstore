@@ -1,6 +1,8 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
-INCLUDE(FindLua51)
+find_package(Lua51 REQUIRED)
+find_package(ICU REQUIRED)
 
 ADD_DEFINITIONS(-D_POSIX_PTHREAD_SEMANTICS)
 ADD_DEFINITIONS(-D_GNU_SOURCE=1)
@@ -34,18 +36,18 @@ elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "SunPro")
 endif ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
 
 IF (WIN32)
-    INCLUDE_DIRECTORIES(BEFORE ${SOURCE_ROOT}/include
-                               ${SOURCE_ROOT}
-                               ${SOURCE_ROOT}/win32)
+    INCLUDE_DIRECTORIES(BEFORE ${CMAKE_SOURCE_DIR}/include
+                               ${CMAKE_SOURCE_DIR}
+                               ${CMAKE_SOURCE_DIR}/win32)
     SET(COUCHSTORE_OS_FILE src/os_win.c)
     SET(COUCHSTORE_OS_LINK ws2_32)
-    SET(ICU_LOCAL_LIBS icuuc icudt icuin)
 ELSE (WIN32)
-    INCLUDE_DIRECTORIES(BEFORE ${SOURCE_ROOT}/include ${SOURCE_ROOT})
+    INCLUDE_DIRECTORIES(BEFORE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR})
     SET(COUCHSTORE_OS_FILE src/os.c)
     SET(COUCHSTORE_OS_LINK stdc++ pthread)
-    SET(ICU_LOCAL_LIBS icuuc icudata icui18n)
 ENDIF (WIN32)
+
+INCLUDE_DIRECTORIES(${ICU_INCLUDE_DIR})
 
 ADD_LIBRARY(mapreduce SHARED
             src/views/mapreduce/mapreduce_c.cc
@@ -71,7 +73,7 @@ ADD_LIBRARY(couchstore SHARED
 
 SET_TARGET_PROPERTIES(couchstore PROPERTIES SOVERSION 1.0.0)
 SET_TARGET_PROPERTIES(couchstore PROPERTIES COMPILE_FLAGS "-DLIBCOUCHSTORE_INTERNAL=1 -DPROTOTYPES=1")
-TARGET_LINK_LIBRARIES(couchstore mapreduce snappy ${ICU_LOCAL_LIBS} ${COUCHSTORE_OS_LINK})
+TARGET_LINK_LIBRARIES(couchstore mapreduce snappy ${ICU_LIBRARIES} ${COUCHSTORE_OS_LINK})
 
 ADD_EXECUTABLE(couch_dbdump src/dbdump.c)
 TARGET_LINK_LIBRARIES(couch_dbdump couchstore ${COUCHSTORE_OS_LINK})
@@ -121,14 +123,14 @@ TARGET_LINK_LIBRARIES(couchstore_testapp couchstore ${COUCHSTORE_OS_LINK})
 ENABLE_TESTING()
 ADD_TEST(unittests couchstore_testapp)
 IF (LUA_LIBRARY)
-ADD_TEST(localdoc couchscript tests/localdoc.lua)
-ADD_TEST(corrupt couchscript tests/corrupt.lua)
-ADD_TEST(bulk couchscript tests/bulk.lua)
-ADD_TEST(changes-since-filter couchscript tests/changessincefilter.lua)
-ADD_TEST(compact couchscript tests/compact.lua)
-ADD_TEST(dropdel couchscript tests/dropdel.lua)
-ADD_TEST(largefile couchscript tests/largefile.lua)
-ADD_TEST(large couchscript tests/large.lua)
+ADD_TEST(localdoc couchscript ${CMAKE_SOURCE_DIR}/tests/localdoc.lua)
+ADD_TEST(corrupt couchscript ${CMAKE_SOURCE_DIR}/tests/corrupt.lua)
+ADD_TEST(bulk couchscript ${CMAKE_SOURCE_DIR}/tests/bulk.lua)
+ADD_TEST(changes-since-filter couchscript ${CMAKE_SOURCE_DIR}/tests/changessincefilter.lua)
+ADD_TEST(compact couchscript ${CMAKE_SOURCE_DIR}/tests/compact.lua)
+ADD_TEST(dropdel couchscript ${CMAKE_SOURCE_DIR}/tests/dropdel.lua)
+ADD_TEST(largefile couchscript ${CMAKE_SOURCE_DIR}/tests/largefile.lua)
+ADD_TEST(large couchscript ${CMAKE_SOURCE_DIR}/tests/large.lua)
 ENDIF (LUA_LIBRARY)
 
 INSTALL(FILES
