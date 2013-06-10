@@ -24,6 +24,7 @@
 #include <string.h>
 #include "macros.h"
 #include "../src/file_sorter.h"
+#include "couchstore_tests.h"
 
 #define UNSORTED_FILE_PATH "unsorted_file.data"
 #define SORT_TMP_DIR       "."

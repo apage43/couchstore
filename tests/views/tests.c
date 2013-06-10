@@ -18,10 +18,11 @@
  * the License.
  **/
 
+#include "../couchstore_tests.h"
 #include "view_tests.h"
 
 
-void view_tests()
+void view_tests(void)
 {
     TPRINT("\n\nRunning view tests\n\n");
 

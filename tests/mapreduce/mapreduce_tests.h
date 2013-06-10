@@ -31,9 +31,8 @@
 #define TPRINT(...) fprintf(stderr, __VA_ARGS__)
 
 /* main test function */
-void mapreduce_tests();
-void map_tests();
-void reduce_tests();
-void builtin_tests();
+extern void map_tests(void);
+extern void reduce_tests(void);
+extern void builtin_tests(void);
 
 #endif

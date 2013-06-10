@@ -18,8 +18,8 @@
  * the License.
  **/
 
+#include "../couchstore_tests.h"
 #include "mapreduce_tests.h"
-
 
 void mapreduce_tests()
 {

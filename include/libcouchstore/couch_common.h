@@ -101,6 +101,10 @@ extern "C" {
     /** Opaque reference to an open database. */
     typedef struct _db Db;
 
+    /** Byteswap a 64bit variable */
+    LIBCOUCHSTORE_API
+    extern uint64_t couchstore_byteswap64(uint64_t val);
+
 #ifdef __cplusplus
 }
 #endif

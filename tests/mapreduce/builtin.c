@@ -37,12 +37,12 @@ static const mapreduce_json_t meta = {
     .length = sizeof("{\"id\":\"doc1\"}") - 1
 };
 
-static void test_sum_function();
-static void test_b64decode_function();
-static void test_date_to_array_function();
+static void test_sum_function(void);
+static void test_b64decode_function(void);
+static void test_date_to_array_function(void);
 
 
-void builtin_tests()
+void builtin_tests(void)
 {
     TPRINT("Running mapreduce builtin tests\n");
 
@@ -54,7 +54,7 @@ void builtin_tests()
 }
 
 
-static void test_sum_function()
+static void test_sum_function(void)
 {
     void *context = NULL;
     char *error_msg = NULL;
@@ -91,7 +91,7 @@ static void test_sum_function()
 }
 
 
-static void test_b64decode_function()
+static void test_b64decode_function(void)
 {
     void *context = NULL;
     char *error_msg = NULL;
@@ -130,7 +130,7 @@ static void test_b64decode_function()
 }
 
 
-static void test_date_to_array_function()
+static void test_date_to_array_function(void)
 {
     void *context = NULL;
     char *error_msg = NULL;

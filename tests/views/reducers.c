@@ -9,12 +9,12 @@
 #define DOUBLE_FMT "%.15lg"
 
 static void free_node_list(nodelist *nl);
-static void test_view_id_btree_reducer();
-static void test_view_btree_sum_reducer();
-static void test_view_btree_sum_reducer_errors();
-static void test_view_btree_count_reducer();
+static void test_view_id_btree_reducer(void);
+static void test_view_btree_sum_reducer(void);
+static void test_view_btree_sum_reducer_errors(void);
+static void test_view_btree_count_reducer(void);
 
-void reducer_tests()
+void reducer_tests(void)
 {
     TPRINT("Running built-in reducer tests ... \n");
     test_view_id_btree_reducer();
@@ -27,7 +27,7 @@ void reducer_tests()
     TPRINT("End of built-in reducer tests\n");
 }
 
-static void test_view_id_btree_reducer()
+static void test_view_id_btree_reducer(void)
 {
     nodelist *nl = NULL;
     node_pointer *np = NULL;
@@ -154,7 +154,7 @@ static void free_node_list(nodelist *nl)
     }
 }
 
-static void test_view_btree_sum_reducer()
+static void test_view_btree_sum_reducer(void)
 {
     nodelist *nl = NULL;
     node_pointer *np = NULL;
@@ -266,7 +266,7 @@ static void test_view_btree_sum_reducer()
     free_node_list(nl);
 }
 
-static void test_view_btree_sum_reducer_errors()
+static void test_view_btree_sum_reducer_errors(void)
 {
     nodelist *nl = NULL;
     node_pointer *np = NULL;
@@ -355,7 +355,7 @@ static void test_view_btree_sum_reducer_errors()
     free_node_list(nl);
 }
 
-static void test_view_btree_count_reducer()
+static void test_view_btree_count_reducer(void)
 {
     nodelist *nl = NULL;
     node_pointer *np = NULL;

@@ -37,7 +37,6 @@ static index_header_t *test_index_header_decoding(const char *header_bin, size_t
     uint16_t pending_unindexable[] = { 15,58 };
     index_header_t *header = NULL;
     bitmap_t expected_active, expected_passive, expected_cleanup;
-    unsigned i;
 
     assert(decode_index_header(header_bin, header_bin_size, &header) == COUCHSTORE_SUCCESS);
     assert(header != NULL);
@@ -48,19 +47,19 @@ static index_header_t *test_index_header_decoding(const char *header_bin, size_t
     assert(header->num_views == 2);
 
     memset(&expected_active, 0, sizeof(expected_active));
-    for (i = 0; i < (sizeof(active) / sizeof(active[0])); ++i) {
+    for (unsigned int i = 0; i < (sizeof(active) / sizeof(active[0])); ++i) {
         set_bit(&expected_active, active[i]);
     }
     assert(memcmp(&header->active_bitmask, &expected_active, sizeof(expected_active)) == 0);
 
     memset(&expected_passive, 0, sizeof(expected_passive));
-    for (i = 0; i < (sizeof(passive) / sizeof(passive[0])); ++i) {
+    for (unsigned int i = 0; i < (sizeof(passive) / sizeof(passive[0])); ++i) {
         set_bit(&expected_passive, passive[i]);
     }
     assert(memcmp(&header->passive_bitmask, &expected_passive, sizeof(expected_passive)) == 0);
 
     memset(&expected_cleanup, 0, sizeof(expected_cleanup));
-    for (i = 0; i < (sizeof(cleanup) / sizeof(cleanup[0])); ++i) {
+    for (unsigned int i = 0; i < (sizeof(cleanup) / sizeof(cleanup[0])); ++i) {
         set_bit(&expected_cleanup, cleanup[i]);
     }
     assert(memcmp(&header->cleanup_bitmask, &expected_cleanup, sizeof(expected_cleanup)) == 0);
@@ -176,7 +175,7 @@ static void test_index_header_encoding(const index_header_t *header,
 
 void test_index_headers()
 {
-    char header_bin[] = {
+    unsigned char header_bin[] = {
         5,226,251,160,170,107,207,39,248,218,139,62,137,58,95,46,204,10,12,1,0,64,0,
         254,1,0,218,1,0,0,136,5,1,4,0,136,254,127,0,218,127,0,8,0,83,119,9,1,254,128,
         0,222,128,0,0,36,5,121,20,136,0,0,58,0,1,1,11,12,4,197,0,2,13,8,0,3,13,8,0,4,
@@ -195,7 +194,7 @@ void test_index_headers()
     };
 
     TPRINT("Decoding an index header...\n");
-    index_header_t *header = test_index_header_decoding(header_bin, sizeof(header_bin));
+    index_header_t *header = test_index_header_decoding((char*)header_bin, sizeof(header_bin));
 
     TPRINT("Encoding the previously decoded header...\n");
     char *header_bin2 = NULL;

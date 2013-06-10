@@ -6,7 +6,7 @@
 
 #ifdef __SUNPRO_C
 #define LIBMAPREDUCE_API __global
-#elif defined(HAVE_VISIBILITY) && HAVE_VISIBILITY
+#elif defined(__GNUC__)
 #define LIBMAPREDUCE_API __attribute__ ((visibility("default")))
 #elif defined(_MSC_VER)
 #define LIBMAPREDUCE_API extern __declspec(dllexport)

@@ -11,11 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "macros.h"
-
-extern void file_merger_tests();
-extern void file_sorter_tests();
-extern void mapreduce_tests();
-extern void view_tests();
+#include "couchstore_tests.h"
 
 #define ZERO(V) memset(&(V), 0, sizeof(V))
 //Only use the macro SETDOC with constants!

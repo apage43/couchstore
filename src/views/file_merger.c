@@ -19,6 +19,7 @@
  **/
 
 #include "config.h"
+#include "file_merger.h"
 #include "util.h"
 
 

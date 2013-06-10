@@ -59,19 +59,19 @@ static const mapreduce_json_t value4 = {
 };
 
 
-static mapreduce_json_list_t *all_keys();
-static mapreduce_json_list_t *all_values();
+static mapreduce_json_list_t *all_keys(void);
+static mapreduce_json_list_t *all_values(void);
 static void free_json_list(mapreduce_json_list_t *list);
 
-static void test_bad_syntax_functions();
-static void test_runtime_exception();
-static void test_runtime_error();
-static void test_reduce_emits();
-static void test_reduce_and_rereduce_success();
-static void test_timeout();
+static void test_bad_syntax_functions(void);
+static void test_runtime_exception(void);
+static void test_runtime_error(void);
+static void test_reduce_emits(void);
+static void test_reduce_and_rereduce_success(void);
+static void test_timeout(void);
 
 
-void reduce_tests()
+void reduce_tests(void)
 {
     TPRINT("Running reduce tests\n");
 
@@ -90,7 +90,7 @@ void reduce_tests()
 }
 
 
-static void test_bad_syntax_functions()
+static void test_bad_syntax_functions(void)
 {
     void *context = NULL;
     char *error_msg = NULL;
@@ -110,7 +110,7 @@ static void test_bad_syntax_functions()
 }
 
 
-static void test_runtime_exception()
+static void test_runtime_exception(void)
 {
     void *context = NULL;
     char *error_msg = NULL;
@@ -140,7 +140,7 @@ static void test_runtime_exception()
 }
 
 
-static void test_runtime_error()
+static void test_runtime_error(void)
 {
     void *context = NULL;
     char *error_msg = NULL;
@@ -200,7 +200,7 @@ static void test_runtime_error()
 }
 
 
-static void test_reduce_emits()
+static void test_reduce_emits(void)
 {
     void *context = NULL;
     char *error_msg = NULL;
@@ -233,7 +233,7 @@ static void test_reduce_emits()
 }
 
 
-static void test_reduce_and_rereduce_success()
+static void test_reduce_and_rereduce_success(void)
 {
     void *context = NULL;
     char *error_msg = NULL;
@@ -330,7 +330,7 @@ static void test_reduce_and_rereduce_success()
 }
 
 
-static void test_timeout()
+static void test_timeout(void)
 {
     void *context = NULL;
     char *error_msg = NULL;
@@ -383,7 +383,7 @@ static void test_timeout()
 }
 
 
-static mapreduce_json_list_t *all_keys()
+static mapreduce_json_list_t *all_keys(void)
 {
     mapreduce_json_list_t *ret = (mapreduce_json_list_t *) malloc(sizeof(*ret));
 
@@ -400,7 +400,7 @@ static mapreduce_json_list_t *all_keys()
 }
 
 
-static mapreduce_json_list_t *all_values()
+static mapreduce_json_list_t *all_values(void)
 {
     mapreduce_json_list_t *ret = (mapreduce_json_list_t *) malloc(sizeof(*ret));
 

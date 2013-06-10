@@ -49,16 +49,16 @@ static const mapreduce_json_t meta3 = {
     .length = sizeof("{\"id\":\"doc3\"}") - 1
 };
 
-static void test_bad_syntax_functions();
-static void test_runtime_exception();
-static void test_runtime_error();
-static void test_map_no_emit();
-static void test_map_single_emit();
-static void test_map_multiple_emits();
-static void test_timeout();
+static void test_bad_syntax_functions(void);
+static void test_runtime_exception(void);
+static void test_runtime_error(void);
+static void test_map_no_emit(void);
+static void test_map_single_emit(void);
+static void test_map_multiple_emits(void);
+static void test_timeout(void);
 
 
-void map_tests()
+void map_tests(void)
 {
     TPRINT("Running map tests\n");
 
@@ -78,7 +78,7 @@ void map_tests()
 }
 
 
-static void test_bad_syntax_functions()
+static void test_bad_syntax_functions(void)
 {
     void *context = NULL;
     char *error_msg = NULL;
@@ -98,7 +98,7 @@ static void test_bad_syntax_functions()
 }
 
 
-static void test_runtime_exception()
+static void test_runtime_exception(void)
 {
     void *context = NULL;
     char *error_msg = NULL;
@@ -128,7 +128,7 @@ static void test_runtime_exception()
 }
 
 
-static void test_runtime_error()
+static void test_runtime_error(void)
 {
     void *context = NULL;
     char *error_msg = NULL;
@@ -159,7 +159,7 @@ static void test_runtime_error()
 }
 
 
-static void test_map_no_emit()
+static void test_map_no_emit(void)
 {
     void *context = NULL;
     char *error_msg = NULL;
@@ -192,7 +192,7 @@ static void test_map_no_emit()
 }
 
 
-static void test_map_single_emit()
+static void test_map_single_emit(void)
 {
     void *context = NULL;
     char *error_msg = NULL;
@@ -272,7 +272,7 @@ static void test_map_single_emit()
 }
 
 
-static void test_map_multiple_emits()
+static void test_map_multiple_emits(void)
 {
     void *context = NULL;
     char *error_msg = NULL;
@@ -464,7 +464,7 @@ static void test_map_multiple_emits()
 }
 
 
-static void test_timeout()
+static void test_timeout(void)
 {
     void *context = NULL;
     char *error_msg = NULL;

@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include "macros.h"
 #include "../src/file_merger.h"
+#include "couchstore_tests.h"
 
 
 #define N_FILES 4

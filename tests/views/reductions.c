@@ -84,7 +84,7 @@ static void test_view_id_btree_reduction_encoding(const view_id_btree_reduction_
 
 void test_reductions()
 {
-    char reduction_bin[] = {
+    unsigned char reduction_bin[] = {
         0,0,0,6,46,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
         0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
         0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -92,7 +92,7 @@ void test_reductions()
         49,53,56,50,0,5,45,49,53,56,50,0,9,49,49,48,49,50,48,54,52,55
     };
 
-    char id_btree_reduction_bin[] = {
+    unsigned char id_btree_reduction_bin[] = {
         0,0,0,11,210,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
         0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
         0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -100,11 +100,11 @@ void test_reductions()
     };
 
     TPRINT("Decoding a view btree reduction ...\n");
-    view_btree_reduction_t *r = test_view_btree_reduction_decoding(reduction_bin,
+    view_btree_reduction_t *r = test_view_btree_reduction_decoding((char*)reduction_bin,
                                                                    sizeof(reduction_bin));
 
     TPRINT("Decoding a view id btree reduction ...\n");
-    view_id_btree_reduction_t *id_btree_r = test_view_id_btree_reduction_decoding(id_btree_reduction_bin);
+    view_id_btree_reduction_t *id_btree_r = test_view_id_btree_reduction_decoding((char*)id_btree_reduction_bin);
 
     TPRINT("Encoding the previously decoded view btree reduction ...\n");
     char r_bin2[MAX_REDUCTION_SIZE];
